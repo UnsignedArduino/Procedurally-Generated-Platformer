@@ -1,25 +1,46 @@
+namespace SpriteKind {
+    export const EndFlag = SpriteKind.create()
+}
 function fix_for_season () {
     define_tilesets()
     if (season == 1) {
-        replace_with = winter_tileset
+        replace_with = tileset_winter
     } else if (season == 2) {
-        replace_with = summer_tileset
+        replace_with = tileset_summer
     } else if (season == 3) {
-        replace_with = fall_tileset
+        replace_with = tileset_fall
     } else {
         return
     }
     for (let index = 0; index <= replace_with.length - 1; index++) {
-        for (let location of tiles.getTilesByType(spring_tileset[index])) {
+        for (let location of tiles.getTilesByType(tileset_spring[index])) {
             tiles.setTileAt(location, replace_with[index])
         }
     }
 }
 function generate_platformer () {
     tiles.setTilemap(tilemap`level_template`)
+    place_ending_flag()
+    fix_for_season()
+}
+function place_ending_flag () {
+    sprite_end_flag = sprites.create(assets.image`end_flag`, SpriteKind.EndFlag)
+    animation.runImageAnimation(
+    sprite_end_flag,
+    assets.animation`end_flag_animation`,
+    150,
+    true
+    )
+    location = tiles.getTilesByType(assets.tile`end`)[0]
+    tiles.placeOnTile(sprite_end_flag, location)
+    sprite_end_flag.bottom = tiles.locationXY(location, tiles.XY.bottom)
+    tiles.setTileAt(location, assets.tile`transparency16`)
+    if (true) {
+        tiles.centerCameraOnTile(location)
+    }
 }
 function define_tilesets () {
-    spring_tileset = [
+    tileset_spring = [
     grafxkid.springGroundTop,
     grafxkid.springGround,
     grafxkid.springTree3,
@@ -32,7 +53,7 @@ function define_tilesets () {
     grafxkid.fence,
     grafxkid.fenceRight
     ]
-    winter_tileset = [
+    tileset_winter = [
     grafxkid.winterGroundTop,
     grafxkid.winterGround,
     grafxkid.winterTree3,
@@ -45,7 +66,7 @@ function define_tilesets () {
     grafxkid.winterFence,
     grafxkid.winterFenceRight
     ]
-    summer_tileset = [
+    tileset_summer = [
     grafxkid.summerGroundTop,
     grafxkid.summerGround,
     grafxkid.summerTree3,
@@ -58,7 +79,7 @@ function define_tilesets () {
     grafxkid.summerFence,
     grafxkid.summerFenceRight
     ]
-    fall_tileset = [
+    tileset_fall = [
     grafxkid.fallGroundTop,
     grafxkid.fallGround,
     grafxkid.fallTree3,
@@ -72,10 +93,12 @@ function define_tilesets () {
     grafxkid.fallFenceRight
     ]
 }
-let spring_tileset: Image[] = []
-let fall_tileset: Image[] = []
-let summer_tileset: Image[] = []
-let winter_tileset: Image[] = []
+let location: tiles.Location = null
+let sprite_end_flag: Sprite = null
+let tileset_spring: Image[] = []
+let tileset_fall: Image[] = []
+let tileset_summer: Image[] = []
+let tileset_winter: Image[] = []
 let replace_with: Image[] = []
 let season = 0
 // Must be between 0 and 65535
@@ -87,16 +110,15 @@ let seed = 1234
 season = 0
 scene.setBackgroundColor(9)
 generate_platformer()
-fix_for_season()
 game.onUpdate(function () {
     if (controller.up.isPressed()) {
-        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 0, scene.cameraProperty(CameraProperty.Y) - 2)
+        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 0, scene.cameraProperty(CameraProperty.Y) - 4)
     } else if (controller.down.isPressed()) {
-        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 0, scene.cameraProperty(CameraProperty.Y) + 2)
+        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 0, scene.cameraProperty(CameraProperty.Y) + 4)
     }
     if (controller.left.isPressed()) {
-        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) - 2, scene.cameraProperty(CameraProperty.Y) + 0)
+        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) - 4, scene.cameraProperty(CameraProperty.Y) + 0)
     } else if (controller.right.isPressed()) {
-        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 2, scene.cameraProperty(CameraProperty.Y) + 0)
+        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 4, scene.cameraProperty(CameraProperty.Y) + 0)
     }
 })
