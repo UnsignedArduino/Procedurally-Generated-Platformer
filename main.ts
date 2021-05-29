@@ -18,9 +18,18 @@ function fix_for_season () {
         }
     }
 }
+function set_walls () {
+    for (let location of tiles.getTilesByType(grafxkid.springGroundTop)) {
+        tiles.setWallAt(location, true)
+    }
+    for (let location of tiles.getTilesByType(grafxkid.springGround)) {
+        tiles.setWallAt(location, true)
+    }
+}
 function generate_platformer () {
     tiles.setTilemap(tilemap`level_template`)
     place_ending_flag()
+    set_walls()
     fix_for_season()
 }
 function place_ending_flag () {
@@ -110,15 +119,3 @@ let seed = 1234
 season = 0
 scene.setBackgroundColor(9)
 generate_platformer()
-game.onUpdate(function () {
-    if (controller.up.isPressed()) {
-        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 0, scene.cameraProperty(CameraProperty.Y) - 4)
-    } else if (controller.down.isPressed()) {
-        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 0, scene.cameraProperty(CameraProperty.Y) + 4)
-    }
-    if (controller.left.isPressed()) {
-        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) - 4, scene.cameraProperty(CameraProperty.Y) + 0)
-    } else if (controller.right.isPressed()) {
-        scene.centerCameraAt(scene.cameraProperty(CameraProperty.X) + 4, scene.cameraProperty(CameraProperty.Y) + 0)
-    }
-})
