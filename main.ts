@@ -1,6 +1,37 @@
 namespace SpriteKind {
     export const EndFlag = SpriteKind.create()
 }
+function create_character (col: number, row: number) {
+    sprite_character = sprites.create(assets.image`player_right`, SpriteKind.Player)
+    tiles.placeOnTile(sprite_character, tiles.getTileLocation(col, row))
+    sprite_character.ay = 400
+    enable_movement(true)
+    scene.cameraFollowSprite(sprite_character)
+    character.loopFrames(
+    sprite_character,
+    assets.animation`player_walk_left`,
+    200,
+    character.rule(Predicate.MovingLeft)
+    )
+    character.loopFrames(
+    sprite_character,
+    assets.animation`player_walk_right`,
+    200,
+    character.rule(Predicate.MovingRight)
+    )
+    character.loopFrames(
+    sprite_character,
+    [assets.animation`player_walk_left`[0]],
+    200,
+    character.rule(Predicate.FacingLeft, Predicate.NotMoving)
+    )
+    character.loopFrames(
+    sprite_character,
+    [assets.animation`player_walk_right`[0]],
+    200,
+    character.rule(Predicate.FacingRight, Predicate.NotMoving)
+    )
+}
 function fix_for_season () {
     define_tilesets()
     if (season == 1) {
@@ -15,6 +46,15 @@ function fix_for_season () {
     for (let index = 0; index <= replace_with.length - 1; index++) {
         for (let location of tiles.getTilesByType(tileset_spring[index])) {
             tiles.setTileAt(location, replace_with[index])
+        }
+    }
+}
+function enable_movement (enabled: boolean) {
+    if (sprite_character) {
+        if (enabled) {
+            controller.moveSprite(sprite_character, 75, 0)
+        } else {
+            controller.moveSprite(sprite_character, 0, 0)
         }
     }
 }
@@ -44,9 +84,6 @@ function place_ending_flag () {
     tiles.placeOnTile(sprite_end_flag, location)
     sprite_end_flag.bottom = tiles.locationXY(location, tiles.XY.bottom)
     tiles.setTileAt(location, assets.tile`transparency16`)
-    if (true) {
-        tiles.centerCameraOnTile(location)
-    }
 }
 function define_tilesets () {
     tileset_spring = [
@@ -109,6 +146,7 @@ let tileset_fall: Image[] = []
 let tileset_summer: Image[] = []
 let tileset_winter: Image[] = []
 let replace_with: Image[] = []
+let sprite_character: Sprite = null
 let season = 0
 // Must be between 0 and 65535
 let seed = 1234
@@ -119,3 +157,4 @@ let seed = 1234
 season = 0
 scene.setBackgroundColor(9)
 generate_platformer()
+create_character(3, 11)
