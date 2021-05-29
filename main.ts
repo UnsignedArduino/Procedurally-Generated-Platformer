@@ -1,6 +1,16 @@
 namespace SpriteKind {
     export const EndFlag = SpriteKind.create()
 }
+scene.onHitWall(SpriteKind.Player, function (sprite, location) {
+    if (sprite.isHittingTile(CollisionDirection.Bottom)) {
+        if (tiles.locationXY(tiles.locationOfSprite(sprite), tiles.XY.row) >= tiles.tilemapRows() - 1) {
+            sprite.destroy()
+            timer.after(2000, function () {
+                game.over(false)
+            })
+        }
+    }
+})
 function create_character (col: number, row: number) {
     sprite_character = sprites.create(assets.image`player_right`, SpriteKind.Player)
     tiles.placeOnTile(sprite_character, tiles.getTileLocation(col, row))
