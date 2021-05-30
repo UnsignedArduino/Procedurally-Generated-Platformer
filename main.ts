@@ -14,6 +14,28 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     jump_character()
 })
+function generate_3_wide_platform (col: number, row: number, variation: number, rand: number) {
+    if (variation == 1) {
+        tiles.setTileAt(tiles.getTileLocation(col, row - 1), grafxkid.fenceLeft)
+        tiles.setTileAt(tiles.getTileLocation(col + 1, row - 1), grafxkid.fence)
+        tiles.setTileAt(tiles.getTileLocation(col + 2, row - 1), grafxkid.fenceRight)
+    } else if (variation == 2) {
+        tiles.setTileAt(tiles.getTileLocation(col + Math.constrain(rand, 0, 2), row - 1), grafxkid.springBush)
+    } else if (variation == 3) {
+        tiles.setTileAt(tiles.getTileLocation(col + Math.constrain(rand, 0, 1), row - 1), grafxkid.springTree3)
+        tiles.setTileAt(tiles.getTileLocation(col + (Math.constrain(rand, 0, 1) + 1), row - 1), grafxkid.springTree4)
+        tiles.setTileAt(tiles.getTileLocation(col + Math.constrain(rand, 0, 1), row - 2), grafxkid.springTree1)
+        tiles.setTileAt(tiles.getTileLocation(col + (Math.constrain(rand, 0, 1) + 1), row - 2), grafxkid.springTree2)
+    }
+    tiles.setTileAt(tiles.getTileLocation(col, row), grafxkid.springGroundTop)
+    tiles.setTileAt(tiles.getTileLocation(col + 1, row), grafxkid.springGroundTop)
+    tiles.setTileAt(tiles.getTileLocation(col + 2, row), grafxkid.springGroundTop)
+    for (let row_diff = 0; row_diff <= 1; row_diff++) {
+        for (let col_diff = 0; col_diff <= 2; col_diff++) {
+            tiles.setTileAt(tiles.getTileLocation(col + col_diff, row + (row_diff + 1)), grafxkid.springGround)
+        }
+    }
+}
 function jump_character () {
     if (sprite_character) {
         if (sprite_character.isHittingTile(CollisionDirection.Bottom)) {
@@ -67,8 +89,8 @@ function fix_for_season () {
         return
     }
     for (let index = 0; index <= replace_with.length - 1; index++) {
-        for (let location of tiles.getTilesByType(tileset_spring[index])) {
-            tiles.setTileAt(location, replace_with[index])
+        for (let location of tiles.getTilesByType(tileset_spring[0])) {
+            tiles.setTileAt(location, replace_with[0])
         }
     }
 }
@@ -109,6 +131,8 @@ function set_walls () {
 function generate_platform (col: number, row: number, width: number, variation: number, rand: number) {
     if (width == 2) {
         generate_2_wide_platform(col, row, variation, rand)
+    } else if (width == 3) {
+        generate_3_wide_platform(col, row, variation, rand)
     } else {
         generate_1_wide_platform(col, row)
     }
@@ -126,7 +150,7 @@ function generate_platformer () {
     rng_variation = Random.createRNG(rng_base.nextNumber())
     rng_rand = Random.createRNG(rng_base.nextNumber())
     while (start_col < 245) {
-        width = rng_width.randomRange(1, 2)
+        width = rng_width.randomRange(1, 3)
         variation = rng_variation.randomRange(0, 3)
         rand = rng_rand.randomRange(0, width - 1)
         generate_platform(start_col, start_row, width, variation, rand)
