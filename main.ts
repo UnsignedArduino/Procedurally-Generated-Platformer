@@ -89,8 +89,8 @@ function fix_for_season () {
         return
     }
     for (let index = 0; index <= replace_with.length - 1; index++) {
-        for (let location of tiles.getTilesByType(tileset_spring[0])) {
-            tiles.setTileAt(location, replace_with[0])
+        for (let location of tiles.getTilesByType(tileset_spring[index])) {
+            tiles.setTileAt(location, replace_with[index])
         }
     }
 }
@@ -149,6 +149,12 @@ function generate_platformer () {
     rng_variation = Random.createRNG(rng_base.nextNumber())
     rng_rand = Random.createRNG(rng_base.nextNumber())
     rng_height = Random.createRNG(rng_base.nextNumber())
+    rng_season = Random.createRNG(rng_base.nextNumber())
+    // 0: spring
+    // 1: winter
+    // 2: summer
+    // 3: fall
+    season = rng_season.randomRange(0, 3)
     while (start_col < 245) {
         width = rng_width.randomRange(1, 3)
         variation = rng_variation.randomRange(0, 3)
@@ -158,6 +164,10 @@ function generate_platformer () {
         start_col += 2
         start_row += rng_height.randomRange(-2, 2)
         start_row = Math.constrain(start_row, 4, tiles.tilemapRows() - 1 - 4)
+        if (false) {
+            tiles.centerCameraOnTile(tiles.getTileLocation(start_col, start_row))
+            pause(0)
+        }
     }
     make_end_platform(start_col, start_row)
     place_ending_flag()
@@ -252,6 +262,7 @@ let sprite_end_flag: Sprite = null
 let rand = 0
 let variation = 0
 let width = 0
+let rng_season: FastRandomBlocks = null
 let rng_height: FastRandomBlocks = null
 let rng_rand: FastRandomBlocks = null
 let rng_variation: FastRandomBlocks = null
@@ -264,17 +275,12 @@ let tileset_fall: Image[] = []
 let tileset_summer: Image[] = []
 let tileset_winter: Image[] = []
 let replace_with: Image[] = []
+let season = 0
 let sprite_character: Sprite = null
 let jump_height = 0
-let season = 0
 let seed = 0
 // Must be between 0 and 65535
 seed = 1234
-// 0: spring
-// 1: winter
-// 2: summer
-// 3: fall
-season = 0
 jump_height = 2.5
 scene.setBackgroundColor(9)
 generate_platformer()
