@@ -142,13 +142,13 @@ function jump (sprite: Sprite, tiles_high: number) {
 }
 function generate_platformer () {
     tiles.setTilemap(tilemap`level_template`)
-    place_ending_flag()
     start_col = 9
     start_row = 12
     rng_base = Random.createRNG(seed)
     rng_width = Random.createRNG(rng_base.nextNumber())
     rng_variation = Random.createRNG(rng_base.nextNumber())
     rng_rand = Random.createRNG(rng_base.nextNumber())
+    rng_height = Random.createRNG(rng_base.nextNumber())
     while (start_col < 245) {
         width = rng_width.randomRange(1, 3)
         variation = rng_variation.randomRange(0, 3)
@@ -156,7 +156,11 @@ function generate_platformer () {
         generate_platform(start_col, start_row, width, variation, rand)
         start_col += width
         start_col += 2
+        start_row += rng_height.randomRange(-2, 2)
+        start_row = Math.constrain(start_row, 4, tiles.tilemapRows() - 1 - 4)
     }
+    make_end_platform(start_col, start_row)
+    place_ending_flag()
     set_walls()
     fix_for_season()
 }
@@ -172,6 +176,22 @@ function place_ending_flag () {
     tiles.placeOnTile(sprite_end_flag, location)
     sprite_end_flag.bottom = tiles.locationXY(location, tiles.XY.bottom)
     tiles.setTileAt(location, assets.tile`transparency16`)
+}
+function make_end_platform (col: number, row: number) {
+    tiles.setTileAt(tiles.getTileLocation(col + 1, row - 1), grafxkid.springGrass)
+    tiles.setTileAt(tiles.getTileLocation(col + 2, row - 1), grafxkid.springTree3)
+    tiles.setTileAt(tiles.getTileLocation(col + 3, row - 1), grafxkid.springTree4)
+    tiles.setTileAt(tiles.getTileLocation(col + 2, row - 2), grafxkid.springTree1)
+    tiles.setTileAt(tiles.getTileLocation(col + 3, row - 2), grafxkid.springTree2)
+    tiles.setTileAt(tiles.getTileLocation(col + 5, row - 1), assets.tile`end`)
+    for (let col_diff = 0; col_diff <= 6; col_diff++) {
+        tiles.setTileAt(tiles.getTileLocation(col + col_diff, row), grafxkid.springGroundTop)
+    }
+    for (let row_diff = 0; row_diff <= 2; row_diff++) {
+        for (let col_diff = 0; col_diff <= 6; col_diff++) {
+            tiles.setTileAt(tiles.getTileLocation(col + col_diff, row + row_diff + 1), grafxkid.springGround)
+        }
+    }
 }
 function define_tilesets () {
     tileset_spring = [
@@ -232,6 +252,7 @@ let sprite_end_flag: Sprite = null
 let rand = 0
 let variation = 0
 let width = 0
+let rng_height: FastRandomBlocks = null
 let rng_rand: FastRandomBlocks = null
 let rng_variation: FastRandomBlocks = null
 let rng_width: FastRandomBlocks = null
@@ -254,7 +275,7 @@ seed = 1234
 // 2: summer
 // 3: fall
 season = 0
-jump_height = 2
+jump_height = 2.5
 scene.setBackgroundColor(9)
 generate_platformer()
 create_character(3, 11)
