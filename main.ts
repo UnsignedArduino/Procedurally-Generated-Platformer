@@ -72,6 +72,23 @@ function fix_for_season () {
         }
     }
 }
+function generate_1_wide_platform (col: number, row: number) {
+    tiles.setTileAt(tiles.getTileLocation(col, row), grafxkid.springGroundTop)
+}
+function generate_2_wide_platform (col: number, row: number, variation: number, rand: number) {
+    if (variation == 1) {
+        tiles.setTileAt(tiles.getTileLocation(col, row - 1), grafxkid.fenceLeft)
+        tiles.setTileAt(tiles.getTileLocation(col + 1, row - 1), grafxkid.fenceRight)
+    } else if (variation == 2) {
+        tiles.setTileAt(tiles.getTileLocation(col + Math.constrain(rand, 0, 1), row - 1), grafxkid.springBush)
+    } else if (variation == 3) {
+        tiles.setTileAt(tiles.getTileLocation(col + Math.constrain(rand, 0, 1), row - 1), grafxkid.springGrass)
+    }
+    tiles.setTileAt(tiles.getTileLocation(col, row), grafxkid.springGroundTop)
+    tiles.setTileAt(tiles.getTileLocation(col + 1, row), grafxkid.springGroundTop)
+    tiles.setTileAt(tiles.getTileLocation(col, row + 1), grafxkid.springGround)
+    tiles.setTileAt(tiles.getTileLocation(col + 1, row + 1), grafxkid.springGround)
+}
 function enable_movement (enabled: boolean) {
     if (sprite_character) {
         if (enabled) {
@@ -89,12 +106,33 @@ function set_walls () {
         tiles.setWallAt(location, true)
     }
 }
+function generate_platform (col: number, row: number, width: number, variation: number, rand: number) {
+    if (width == 2) {
+        generate_2_wide_platform(col, row, variation, rand)
+    } else {
+        generate_1_wide_platform(col, row)
+    }
+}
 function jump (sprite: Sprite, tiles_high: number) {
     sprite.vy = Math.sqrt(2 * (sprite.ay * (tiles_high * tiles.tileWidth()))) * -1
 }
 function generate_platformer () {
     tiles.setTilemap(tilemap`level_template`)
     place_ending_flag()
+    start_col = 9
+    start_row = 12
+    rng_base = Random.createRNG(seed)
+    rng_width = Random.createRNG(rng_base.nextNumber())
+    rng_variation = Random.createRNG(rng_base.nextNumber())
+    rng_rand = Random.createRNG(rng_base.nextNumber())
+    while (start_col < 245) {
+        width = rng_width.randomRange(1, 2)
+        variation = rng_variation.randomRange(0, 3)
+        rand = rng_rand.randomRange(0, width - 1)
+        generate_platform(start_col, start_row, width, variation, rand)
+        start_col += width
+        start_col += 2
+    }
     set_walls()
     fix_for_season()
 }
@@ -167,6 +205,15 @@ function define_tilesets () {
 }
 let location: tiles.Location = null
 let sprite_end_flag: Sprite = null
+let rand = 0
+let variation = 0
+let width = 0
+let rng_rand: FastRandomBlocks = null
+let rng_variation: FastRandomBlocks = null
+let rng_width: FastRandomBlocks = null
+let rng_base: FastRandomBlocks = null
+let start_row = 0
+let start_col = 0
 let tileset_spring: Image[] = []
 let tileset_fall: Image[] = []
 let tileset_summer: Image[] = []
@@ -175,8 +222,9 @@ let replace_with: Image[] = []
 let sprite_character: Sprite = null
 let jump_height = 0
 let season = 0
+let seed = 0
 // Must be between 0 and 65535
-let seed = 1234
+seed = 1234
 // 0: spring
 // 1: winter
 // 2: summer
