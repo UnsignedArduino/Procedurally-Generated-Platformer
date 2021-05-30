@@ -100,7 +100,6 @@ function player_start_animation () {
         sprite_character.setFlag(SpriteFlag.Ghost, false)
         sprite_character.ay = 400
         sprite_character.vx = 0
-        enable_movement(true)
     })
 }
 function fix_for_season () {
@@ -136,6 +135,9 @@ function fade_in (block: boolean) {
     }
 }
 function update_timer () {
+    if (!(sprite_timer)) {
+        return
+    }
     end_time = game.runtime()
     time = spriteutils.roundWithPrecision((end_time - start_time) / 1000, 2)
     if (time < 60) {
@@ -339,7 +341,9 @@ function define_tilesets () {
     ]
 }
 function update_progress_bar () {
-    progress_bar.value = sprite_character.x
+    if (progress_bar && sprite_character) {
+        progress_bar.value = sprite_character.x
+    }
 }
 let location: tiles.Location = null
 let sprite_end_flag: Sprite = null
@@ -355,10 +359,10 @@ let rng_base: FastRandomBlocks = null
 let start_row = 0
 let start_col = 0
 let secs = 0
-let sprite_timer: TextSprite = null
 let start_time = 0
 let time = 0
 let end_time = 0
+let sprite_timer: TextSprite = null
 let tileset_spring: Image[] = []
 let tileset_fall: Image[] = []
 let tileset_summer: Image[] = []
@@ -380,11 +384,15 @@ jump_height = 2.5
 finished = false
 scene.setBackgroundColor(9)
 generate_platformer()
-create_progress_bar()
 create_character(0, 11)
 player_start_animation()
-start_timer()
 fade_out(false)
+timer.background(function () {
+    pause(1000)
+    create_progress_bar()
+    start_timer()
+    enable_movement(true)
+})
 game.onUpdate(function () {
     update_progress_bar()
     if (!(finished)) {
