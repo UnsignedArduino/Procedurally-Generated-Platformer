@@ -57,6 +57,7 @@ function create_progress_bar () {
     progress_bar.setColor(8, 0)
     progress_bar.left = 2
     progress_bar.top = 2
+    progress_bar.setFlag(SpriteFlag.RelativeToCamera, true)
 }
 function create_character (col: number, row: number) {
     sprite_character = sprites.create(assets.image`player_right`, SpriteKind.Player)
@@ -134,6 +135,20 @@ function fade_in (block: boolean) {
         color.clearFadeEffect()
     }
 }
+function update_timer () {
+    end_time = game.runtime()
+    time = spriteutils.roundWithPrecision((end_time - start_time) / 1000, 2)
+    if (time < 60) {
+        sprite_timer.setText("" + time)
+    } else {
+        secs = spriteutils.roundWithPrecision(time - Math.idiv(time, 60) * 60, 2)
+        if (secs < 10) {
+            sprite_timer.setText("" + Math.idiv(time, 60) + ":0" + secs)
+        } else {
+            sprite_timer.setText("" + Math.idiv(time, 60) + ":" + secs)
+        }
+    }
+}
 function generate_2_wide_platform (col: number, row: number, variation: number, rand: number) {
     if (variation == 1) {
         tiles.setTileAt(tiles.getTileLocation(col, row - 1), grafxkid.fenceLeft)
@@ -157,6 +172,13 @@ function enable_movement (enabled: boolean) {
             controller.moveSprite(sprite_character, 0, 0)
         }
     }
+}
+function start_timer () {
+    start_time = game.runtime()
+    sprite_timer = textsprite.create("0.00", 0, 1)
+    sprite_timer.left = 2
+    sprite_timer.bottom = scene.screenHeight() - 2
+    sprite_timer.setFlag(SpriteFlag.RelativeToCamera, true)
 }
 function set_walls () {
     for (let location of tiles.getTilesByType(grafxkid.springGroundTop)) {
@@ -232,6 +254,7 @@ function place_ending_flag () {
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.EndFlag, function (sprite, otherSprite) {
     sprite.setKind(SpriteKind.FinishedPlayer)
+    finished = true
     timer.background(function () {
         sprite.ay = 0
         while (!(sprite.isHittingTile(CollisionDirection.Bottom))) {
@@ -331,6 +354,11 @@ let rng_width: FastRandomBlocks = null
 let rng_base: FastRandomBlocks = null
 let start_row = 0
 let start_col = 0
+let secs = 0
+let sprite_timer: TextSprite = null
+let start_time = 0
+let time = 0
+let end_time = 0
 let tileset_spring: Image[] = []
 let tileset_fall: Image[] = []
 let tileset_summer: Image[] = []
@@ -340,6 +368,7 @@ let season = 0
 let progress_bar: StatusBarSprite = null
 let can_jump = false
 let sprite_character: Sprite = null
+let finished = false
 let jump_height = 0
 let seed = 0
 // Must be between 0 and 65535
@@ -348,12 +377,17 @@ color.setPalette(
 color.Black
 )
 jump_height = 2.5
+finished = false
 scene.setBackgroundColor(9)
 generate_platformer()
 create_progress_bar()
 create_character(0, 11)
 player_start_animation()
+start_timer()
 fade_out(false)
 game.onUpdate(function () {
     update_progress_bar()
+    if (!(finished)) {
+        update_timer()
+    }
 })
