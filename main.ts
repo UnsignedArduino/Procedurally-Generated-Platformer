@@ -11,6 +11,19 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
         }
     }
 })
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    jump_character()
+})
+function jump_character () {
+    if (sprite_character) {
+        if (sprite_character.isHittingTile(CollisionDirection.Bottom)) {
+            jump(sprite_character, jump_height)
+        }
+    }
+}
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    jump_character()
+})
 function create_character (col: number, row: number) {
     sprite_character = sprites.create(assets.image`player_right`, SpriteKind.Player)
     tiles.placeOnTile(sprite_character, tiles.getTileLocation(col, row))
@@ -75,6 +88,9 @@ function set_walls () {
     for (let location of tiles.getTilesByType(grafxkid.springGround)) {
         tiles.setWallAt(location, true)
     }
+}
+function jump (sprite: Sprite, tiles_high: number) {
+    sprite.vy = Math.sqrt(2 * (sprite.ay * (tiles_high * tiles.tileWidth()))) * -1
 }
 function generate_platformer () {
     tiles.setTilemap(tilemap`level_template`)
@@ -157,6 +173,7 @@ let tileset_summer: Image[] = []
 let tileset_winter: Image[] = []
 let replace_with: Image[] = []
 let sprite_character: Sprite = null
+let jump_height = 0
 let season = 0
 // Must be between 0 and 65535
 let seed = 1234
@@ -165,6 +182,7 @@ let seed = 1234
 // 2: summer
 // 3: fall
 season = 0
+jump_height = 2
 scene.setBackgroundColor(9)
 generate_platformer()
 create_character(3, 11)
