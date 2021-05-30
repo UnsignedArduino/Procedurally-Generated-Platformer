@@ -1,6 +1,7 @@
 namespace SpriteKind {
     export const EndFlag = SpriteKind.create()
     export const FinishedPlayer = SpriteKind.create()
+    export const Title = SpriteKind.create()
 }
 namespace StatusBarKind {
     export const Progress = StatusBarKind.create()
@@ -277,11 +278,11 @@ function make_end_platform (col: number, row: number) {
     tiles.setTileAt(tiles.getTileLocation(col + 2, row - 2), grafxkid.springTree1)
     tiles.setTileAt(tiles.getTileLocation(col + 3, row - 2), grafxkid.springTree2)
     tiles.setTileAt(tiles.getTileLocation(col + 5, row - 1), assets.tile`end`)
-    for (let col_diff = 0; col_diff <= 6; col_diff++) {
+    for (let col_diff = 0; col_diff <= 10; col_diff++) {
         tiles.setTileAt(tiles.getTileLocation(col + col_diff, row), grafxkid.springGroundTop)
     }
     for (let row_diff = 0; row_diff <= 2; row_diff++) {
-        for (let col_diff = 0; col_diff <= 6; col_diff++) {
+        for (let col_diff = 0; col_diff <= 10; col_diff++) {
             tiles.setTileAt(tiles.getTileLocation(col + col_diff, row + row_diff + 1), grafxkid.springGround)
         }
     }
@@ -375,7 +376,7 @@ let sprite_character: Sprite = null
 let finished = false
 let jump_height = 0
 let seed = 0
-// Must be between 0 and 65535
+// Cannot be less than 1
 seed = 1234
 color.setPalette(
 color.Black
@@ -387,11 +388,21 @@ generate_platformer()
 create_character(0, 11)
 player_start_animation()
 fade_out(false)
-timer.background(function () {
-    pause(1000)
-    create_progress_bar()
-    start_timer()
-    enable_movement(true)
+let sprite_title = sprites.create(assets.image`title_screen`, SpriteKind.Title)
+sprite_title.top = 0
+sprite_title.left = 0
+sprite_title.setFlag(SpriteFlag.RelativeToCamera, true)
+sprite_title.setFlag(SpriteFlag.AutoDestroy, true)
+timer.after(1000, function () {
+    timer.background(function () {
+        while (!(controller.anyButton.isPressed())) {
+            pause(100)
+        }
+        sprite_title.ay = -500
+        create_progress_bar()
+        start_timer()
+        enable_movement(true)
+    })
 })
 game.onUpdate(function () {
     update_progress_bar()
