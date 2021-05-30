@@ -8,7 +8,8 @@
         "FastRandomBlocks": "github:UnsignedArduino/Fast-Random-Blocks#8c985a77e5c4278e43a7bc375db095c67afb58ed",
         "grafxkid-tiles": "github:riknoll/grafxkid-tiles#v2.0.1",
         "character-animations": "github:riknoll/character-animations#v0.3.0",
-        "Color Fading": "github:jwunderl/pxt-color#v0.2.1"
+        "Color Fading": "github:jwunderl/pxt-color#v0.2.1",
+        "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.1"
     },
     "files": [
         "main.blocks",

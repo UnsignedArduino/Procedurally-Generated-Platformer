@@ -2,6 +2,9 @@ namespace SpriteKind {
     export const EndFlag = SpriteKind.create()
     export const FinishedPlayer = SpriteKind.create()
 }
+namespace StatusBarKind {
+    export const Progress = StatusBarKind.create()
+}
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (sprite.isHittingTile(CollisionDirection.Bottom)) {
         if (tiles.locationXY(tiles.locationOfSprite(sprite), tiles.XY.row) >= tiles.tilemapRows() - 1) {
@@ -47,6 +50,14 @@ function jump_character () {
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     jump_character()
 })
+function create_progress_bar () {
+    progress_bar = statusbars.create(scene.screenWidth() - 4, 3, StatusBarKind.Progress)
+    progress_bar.value = 0
+    progress_bar.max = tiles.tilemapColumns() * tiles.tileWidth()
+    progress_bar.setColor(8, 0)
+    progress_bar.left = 2
+    progress_bar.top = 2
+}
 function create_character (col: number, row: number) {
     sprite_character = sprites.create(assets.image`player_right`, SpriteKind.Player)
     tiles.placeOnTile(sprite_character, tiles.getTileLocation(col, row))
@@ -182,7 +193,7 @@ function generate_platformer () {
     // 2: summer
     // 3: fall
     season = rng_season.randomRange(0, 3)
-    while (start_col < 245) {
+    while (start_col < tiles.tilemapColumns() - 10) {
         width = rng_width.randomRange(1, 3)
         variation = rng_variation.randomRange(0, 3)
         rand = rng_rand.randomRange(0, width - 1)
@@ -304,6 +315,9 @@ function define_tilesets () {
     grafxkid.fallFenceRight
     ]
 }
+function update_progress_bar () {
+    progress_bar.value = sprite_character.x
+}
 let location: tiles.Location = null
 let sprite_end_flag: Sprite = null
 let rand = 0
@@ -323,6 +337,7 @@ let tileset_summer: Image[] = []
 let tileset_winter: Image[] = []
 let replace_with: Image[] = []
 let season = 0
+let progress_bar: StatusBarSprite = null
 let can_jump = false
 let sprite_character: Sprite = null
 let jump_height = 0
@@ -335,6 +350,10 @@ color.Black
 jump_height = 2.5
 scene.setBackgroundColor(9)
 generate_platformer()
+create_progress_bar()
 create_character(0, 11)
 player_start_animation()
 fade_out(false)
+game.onUpdate(function () {
+    update_progress_bar()
+})
