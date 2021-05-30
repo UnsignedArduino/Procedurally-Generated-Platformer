@@ -1,5 +1,6 @@
 namespace SpriteKind {
     export const EndFlag = SpriteKind.create()
+    export const FinishedPlayer = SpriteKind.create()
 }
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (sprite.isHittingTile(CollisionDirection.Bottom)) {
@@ -38,7 +39,7 @@ function generate_3_wide_platform (col: number, row: number, variation: number, 
 }
 function jump_character () {
     if (sprite_character) {
-        if (sprite_character.isHittingTile(CollisionDirection.Bottom)) {
+        if (sprite_character.isHittingTile(CollisionDirection.Bottom) && can_jump) {
             jump(sprite_character, jump_height)
         }
     }
@@ -97,6 +98,18 @@ function fix_for_season () {
 function generate_1_wide_platform (col: number, row: number) {
     tiles.setTileAt(tiles.getTileLocation(col, row), grafxkid.springGroundTop)
 }
+function fade_out (block: boolean) {
+    color.startFade(color.Black, color.originalPalette, 2000)
+    if (block) {
+        color.clearFadeEffect()
+    }
+}
+function fade_in (block: boolean) {
+    color.startFade(color.originalPalette, color.Black, 2000)
+    if (block) {
+        color.clearFadeEffect()
+    }
+}
 function generate_2_wide_platform (col: number, row: number, variation: number, rand: number) {
     if (variation == 1) {
         tiles.setTileAt(tiles.getTileLocation(col, row - 1), grafxkid.fenceLeft)
@@ -113,6 +126,7 @@ function generate_2_wide_platform (col: number, row: number, variation: number, 
 }
 function enable_movement (enabled: boolean) {
     if (sprite_character) {
+        can_jump = enabled
         if (enabled) {
             controller.moveSprite(sprite_character, 75, 0)
         } else {
@@ -170,6 +184,11 @@ function generate_platformer () {
         }
     }
     make_end_platform(start_col, start_row)
+    if (false) {
+        timer.after(500, function () {
+            tiles.placeOnTile(sprite_character, tiles.getTileLocation(start_col, start_row - 2))
+        })
+    }
     place_ending_flag()
     set_walls()
     fix_for_season()
@@ -187,6 +206,21 @@ function place_ending_flag () {
     sprite_end_flag.bottom = tiles.locationXY(location, tiles.XY.bottom)
     tiles.setTileAt(location, assets.tile`transparency16`)
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.EndFlag, function (sprite, otherSprite) {
+    sprite.setKind(SpriteKind.FinishedPlayer)
+    timer.background(function () {
+        sprite.ay = 0
+        while (!(sprite.isHittingTile(CollisionDirection.Bottom))) {
+            pause(0)
+        }
+        sprite.setFlag(SpriteFlag.Ghost, true)
+        enable_movement(false)
+        sprite.vx = 75
+        timer.after(2000, function () {
+            game.over(true)
+        })
+    })
+})
 function make_end_platform (col: number, row: number) {
     tiles.setTileAt(tiles.getTileLocation(col + 1, row - 1), grafxkid.springGrass)
     tiles.setTileAt(tiles.getTileLocation(col + 2, row - 1), grafxkid.springTree3)
@@ -276,12 +310,17 @@ let tileset_summer: Image[] = []
 let tileset_winter: Image[] = []
 let replace_with: Image[] = []
 let season = 0
+let can_jump = false
 let sprite_character: Sprite = null
 let jump_height = 0
 let seed = 0
 // Must be between 0 and 65535
 seed = 1234
+color.setPalette(
+color.Black
+)
 jump_height = 2.5
 scene.setBackgroundColor(9)
 generate_platformer()
 create_character(3, 11)
+fade_out(false)
