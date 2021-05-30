@@ -78,6 +78,19 @@ function create_character (col: number, row: number) {
     character.rule(Predicate.FacingRight, Predicate.NotMoving)
     )
 }
+function player_start_animation () {
+    enable_movement(false)
+    sprite_character.setFlag(SpriteFlag.Ghost, true)
+    sprite_character.ay = 0
+    sprite_character.vx = 75
+    sprite_character.x += tiles.tileWidth() * -1
+    timer.after(1000 / sprite_character.vx * tiles.tileWidth() * 4.5, function () {
+        sprite_character.setFlag(SpriteFlag.Ghost, false)
+        sprite_character.ay = 400
+        sprite_character.vx = 0
+        enable_movement(true)
+    })
+}
 function fix_for_season () {
     define_tilesets()
     if (season == 1) {
@@ -323,15 +336,5 @@ jump_height = 2.5
 scene.setBackgroundColor(9)
 generate_platformer()
 create_character(0, 11)
-enable_movement(false)
-sprite_character.setFlag(SpriteFlag.Ghost, true)
-sprite_character.ay = 0
-sprite_character.vx = 75
-sprite_character.x += tiles.tileWidth() * -1
-timer.after(1000 / sprite_character.vx * tiles.tileWidth() * 4.5, function () {
-    sprite_character.setFlag(SpriteFlag.Ghost, false)
-    sprite_character.ay = 400
-    sprite_character.vx = 0
-    enable_movement(true)
-})
+player_start_animation()
 fade_out(false)
