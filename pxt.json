@@ -13,7 +13,8 @@
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
         "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.2.0",
         "block-menu": "github:riknoll/arcade-custom-menu#v0.0.1",
-        "settings-blocks": "github:microsoft/pxt-settings-blocks#v1.0.0"
+        "settings-blocks": "github:microsoft/pxt-settings-blocks#v1.0.0",
+        "arcade-shader": "github:riknoll/arcade-shader#d2a2572906fdb68ff429f337e30606b069e688ea"
     },
     "files": [
         "main.blocks",
@@ -29,7 +30,7 @@
         "test.ts"
     ],
     "targetVersions": {
-        "target": "1.4.43",
+        "target": "1.4.44",
         "targetId": "arcade"
     },
     "supportedTargets": [

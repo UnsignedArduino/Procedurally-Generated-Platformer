@@ -6,6 +6,23 @@ namespace SpriteKind {
 namespace StatusBarKind {
     export const Progress = StatusBarKind.create()
 }
+function set_new_seed () {
+    while (true) {
+        new_seed = game.askForNumber("Please enter a seed:", 5)
+        if (!(new_seed == new_seed)) {
+            game.showLongText("Canceled setting new seed.", DialogLayout.Bottom)
+            fade_in(true)
+            game.reset()
+        } else if (new_seed < 1 || new_seed > 65535) {
+            game.showLongText("" + new_seed + " is not a valid seed! Please try again!", DialogLayout.Bottom)
+        } else {
+            blockSettings.writeNumber("seed", new_seed)
+            game.showLongText("" + new_seed + " is now the new seed!", DialogLayout.Bottom)
+            fade_in(true)
+            game.reset()
+        }
+    }
+}
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (sprite.isHittingTile(CollisionDirection.Bottom)) {
         if (tiles.locationXY(tiles.locationOfSprite(sprite), tiles.XY.row) >= tiles.tilemapRows() - 1) {
@@ -128,6 +145,9 @@ function fade_out (block: boolean) {
     if (block) {
         color.pauseUntilFadeDone()
     }
+}
+function read_bool (name: string) {
+    return blockSettings.readNumber(name) == 1
 }
 function fade_in (block: boolean) {
     color.startFade(color.originalPalette, color.Black, 2000)
@@ -261,6 +281,13 @@ function place_ending_flag () {
     sprite_end_flag.bottom = tiles.locationXY(location, tiles.XY.bottom)
     tiles.setTileAt(location, assets.tile`transparency16`)
 }
+function save_bool (name: string, value: boolean) {
+    if (value) {
+        blockSettings.writeNumber(name, 1)
+    } else {
+        blockSettings.writeNumber(name, 0)
+    }
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.EndFlag, function (sprite, otherSprite) {
     sprite.setKind(SpriteKind.FinishedPlayer)
     finished = true
@@ -392,6 +419,11 @@ if (!(blockSettings.exists("seed"))) {
 }
 // Cannot be less than 1
 seed = blockSettings.readNumber("seed")
+if (!(blockSettings.exists("night_mode"))) {
+    save_bool("night_mode", false)
+}
+let night_mode = read_bool("night_mode")
+night_mode = true
 color.setPalette(
 color.Black
 )
@@ -405,6 +437,7 @@ fade_out(false)
 let sprite_title = sprites.create(assets.image`title_screen`, SpriteKind.Title)
 sprite_title.top = 0
 sprite_title.left = 0
+sprite_title.z = 10
 sprite_title.setFlag(SpriteFlag.RelativeToCamera, true)
 sprite_title.setFlag(SpriteFlag.AutoDestroy, true)
 let sprite_seed = textsprite.create("Seed: " + seed, 0, 1)
@@ -412,6 +445,7 @@ sprite_seed.bottom = scene.screenHeight() - 2
 sprite_seed.left = 2
 sprite_seed.setFlag(SpriteFlag.RelativeToCamera, true)
 sprite_seed.setFlag(SpriteFlag.AutoDestroy, true)
+sprite_seed.z = 10
 blockMenu.setControlsEnabled(false)
 blockMenu.setColors(1, 15)
 blockMenu.showMenu(["Play", "Set seed"], MenuStyle.List, MenuLocation.BottomRight)
@@ -427,21 +461,7 @@ timer.after(1000, function () {
             start_timer()
             enable_movement(true)
         } else if (blockMenu.selectedMenuIndex() == 1) {
-            while (true) {
-                new_seed = game.askForNumber("Please enter a seed:", 5)
-                if (!(new_seed == new_seed)) {
-                    game.showLongText("Canceled setting new seed.", DialogLayout.Bottom)
-                    fade_in(true)
-                    game.reset()
-                } else if (new_seed < 1 || new_seed > 65535) {
-                    game.showLongText("" + new_seed + " is not a valid seed! Please try again!", DialogLayout.Bottom)
-                } else {
-                    blockSettings.writeNumber("seed", new_seed)
-                    game.showLongText("" + new_seed + " is now the new seed!", DialogLayout.Bottom)
-                    fade_in(true)
-                    game.reset()
-                }
-            }
+            set_new_seed()
         }
     })
 })
