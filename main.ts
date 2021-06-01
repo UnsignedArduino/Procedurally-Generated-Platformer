@@ -407,6 +407,11 @@ sprite_title.top = 0
 sprite_title.left = 0
 sprite_title.setFlag(SpriteFlag.RelativeToCamera, true)
 sprite_title.setFlag(SpriteFlag.AutoDestroy, true)
+let sprite_seed = textsprite.create("Seed: " + seed, 0, 1)
+sprite_seed.bottom = scene.screenHeight() - 2
+sprite_seed.left = 2
+sprite_seed.setFlag(SpriteFlag.RelativeToCamera, true)
+sprite_seed.setFlag(SpriteFlag.AutoDestroy, true)
 blockMenu.setControlsEnabled(false)
 blockMenu.setColors(1, 15)
 blockMenu.showMenu(["Play", "Set seed"], MenuStyle.List, MenuLocation.BottomRight)
@@ -417,6 +422,7 @@ timer.after(1000, function () {
         blockMenu.closeMenu()
         if (blockMenu.selectedMenuIndex() == 0) {
             sprite_title.ay = -500
+            sprite_seed.ay = 500
             create_progress_bar()
             start_timer()
             enable_movement(true)
