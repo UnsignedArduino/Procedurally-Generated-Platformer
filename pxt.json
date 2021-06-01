@@ -11,7 +11,9 @@
         "Color Fading": "github:jwunderl/pxt-color#v0.2.1",
         "pxt-status-bar": "github:jwunderl/pxt-status-bar#v0.4.1",
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
-        "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.2.0"
+        "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.2.0",
+        "block-menu": "github:riknoll/arcade-custom-menu#v0.0.1",
+        "settings-blocks": "github:microsoft/pxt-settings-blocks#v1.0.0"
     },
     "files": [
         "main.blocks",

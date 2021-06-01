@@ -126,13 +126,19 @@ function generate_1_wide_platform (col: number, row: number) {
 function fade_out (block: boolean) {
     color.startFade(color.Black, color.originalPalette, 2000)
     if (block) {
-        color.clearFadeEffect()
+        color.pauseUntilFadeDone()
     }
 }
 function fade_in (block: boolean) {
     color.startFade(color.originalPalette, color.Black, 2000)
     if (block) {
-        color.clearFadeEffect()
+        color.pauseUntilFadeDone()
+    }
+}
+function wait_for_menu_select () {
+    selected = false
+    while (!(selected)) {
+        pause(100)
     }
 }
 function update_timer () {
@@ -287,6 +293,9 @@ function make_end_platform (col: number, row: number) {
         }
     }
 }
+blockMenu.onMenuOptionSelected(function (option, index) {
+    selected = true
+})
 function define_tilesets () {
     tileset_spring = [
     grafxkid.springGroundTop,
@@ -364,6 +373,7 @@ let start_time = 0
 let time = 0
 let end_time = 0
 let sprite_timer: TextSprite = null
+let selected = false
 let tileset_spring: Image[] = []
 let tileset_fall: Image[] = []
 let tileset_summer: Image[] = []
@@ -373,11 +383,15 @@ let season = 0
 let progress_bar: StatusBarSprite = null
 let can_jump = false
 let sprite_character: Sprite = null
+let new_seed = 0
 let finished = false
 let jump_height = 0
 let seed = 0
+if (!(blockSettings.exists("seed"))) {
+    blockSettings.writeNumber("seed", 1234)
+}
 // Cannot be less than 1
-seed = 1234
+seed = blockSettings.readNumber("seed")
 color.setPalette(
 color.Black
 )
@@ -393,15 +407,36 @@ sprite_title.top = 0
 sprite_title.left = 0
 sprite_title.setFlag(SpriteFlag.RelativeToCamera, true)
 sprite_title.setFlag(SpriteFlag.AutoDestroy, true)
+blockMenu.setControlsEnabled(false)
+blockMenu.setColors(1, 15)
+blockMenu.showMenu(["Play", "Set seed"], MenuStyle.List, MenuLocation.BottomRight)
 timer.after(1000, function () {
+    blockMenu.setControlsEnabled(true)
     timer.background(function () {
-        while (!(controller.anyButton.isPressed())) {
-            pause(100)
+        wait_for_menu_select()
+        blockMenu.closeMenu()
+        if (blockMenu.selectedMenuIndex() == 0) {
+            sprite_title.ay = -500
+            create_progress_bar()
+            start_timer()
+            enable_movement(true)
+        } else if (blockMenu.selectedMenuIndex() == 1) {
+            while (true) {
+                new_seed = game.askForNumber("Please enter a seed:", 5)
+                if (!(new_seed == new_seed)) {
+                    game.showLongText("Canceled setting new seed.", DialogLayout.Bottom)
+                    fade_in(true)
+                    game.reset()
+                } else if (new_seed < 1 || new_seed > 65535) {
+                    game.showLongText("" + new_seed + " is not a valid seed! Please try again!", DialogLayout.Bottom)
+                } else {
+                    blockSettings.writeNumber("seed", new_seed)
+                    game.showLongText("" + new_seed + " is now the new seed!", DialogLayout.Bottom)
+                    fade_in(true)
+                    game.reset()
+                }
+            }
         }
-        sprite_title.ay = -500
-        create_progress_bar()
-        start_timer()
-        enable_movement(true)
     })
 })
 game.onUpdate(function () {
