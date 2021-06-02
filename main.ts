@@ -23,6 +23,9 @@ function set_new_seed () {
         }
     }
 }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    jump_character()
+})
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (sprite.isHittingTile(CollisionDirection.Bottom)) {
         if (tiles.locationXY(tiles.locationOfSprite(sprite), tiles.XY.row) >= tiles.tilemapRows() - 1) {
@@ -32,9 +35,6 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
             })
         }
     }
-})
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    jump_character()
 })
 function generate_3_wide_platform (col: number, row: number, variation: number, rand: number) {
     if (variation == 1) {
@@ -215,11 +215,11 @@ function start_timer () {
     sprite_timer.setFlag(SpriteFlag.RelativeToCamera, true)
 }
 function set_walls () {
-    for (let location of tiles.getTilesByType(grafxkid.springGroundTop)) {
-        tiles.setWallAt(location, true)
+    for (let location2 of tiles.getTilesByType(grafxkid.springGroundTop)) {
+        tiles.setWallAt(location2, true)
     }
-    for (let location of tiles.getTilesByType(grafxkid.springGround)) {
-        tiles.setWallAt(location, true)
+    for (let location3 of tiles.getTilesByType(grafxkid.springGround)) {
+        tiles.setWallAt(location3, true)
     }
 }
 function generate_platform (col: number, row: number, width: number, variation: number, rand: number) {
@@ -412,10 +412,10 @@ function place_ending_flag () {
     150,
     true
     )
-    location = tiles.getTilesByType(assets.tile`end`)[0]
-    tiles.placeOnTile(sprite_end_flag, location)
-    sprite_end_flag.bottom = tiles.locationXY(location, tiles.XY.bottom)
-    tiles.setTileAt(location, assets.tile`transparency16`)
+    location4 = tiles.getTilesByType(assets.tile`end`)[0]
+    tiles.placeOnTile(sprite_end_flag, location4)
+    sprite_end_flag.bottom = tiles.locationXY(location4, tiles.XY.bottom)
+    tiles.setTileAt(location4, assets.tile`transparency16`)
 }
 function save_bool (name: string, value: boolean) {
     if (value) {
@@ -447,12 +447,12 @@ function make_end_platform (col: number, row: number) {
     tiles.setTileAt(tiles.getTileLocation(col + 2, row - 2), grafxkid.springTree1)
     tiles.setTileAt(tiles.getTileLocation(col + 3, row - 2), grafxkid.springTree2)
     tiles.setTileAt(tiles.getTileLocation(col + 5, row - 1), assets.tile`end`)
-    for (let col_diff = 0; col_diff <= 10; col_diff++) {
-        tiles.setTileAt(tiles.getTileLocation(col + col_diff, row), grafxkid.springGroundTop)
+    for (let col_diff2 = 0; col_diff2 <= 10; col_diff2++) {
+        tiles.setTileAt(tiles.getTileLocation(col + col_diff2, row), grafxkid.springGroundTop)
     }
-    for (let row_diff = 0; row_diff <= 2; row_diff++) {
-        for (let col_diff = 0; col_diff <= 10; col_diff++) {
-            tiles.setTileAt(tiles.getTileLocation(col + col_diff, row + row_diff + 1), grafxkid.springGround)
+    for (let row_diff2 = 0; row_diff2 <= 2; row_diff2++) {
+        for (let col_diff3 = 0; col_diff3 <= 10; col_diff3++) {
+            tiles.setTileAt(tiles.getTileLocation(col + col_diff3, row + row_diff2 + 1), grafxkid.springGround)
         }
     }
 }
@@ -518,7 +518,7 @@ function update_progress_bar () {
         progress_bar.value = sprite_character.x
     }
 }
-let location: tiles.Location = null
+let location4: tiles.Location = null
 let sprite_end_flag: Sprite = null
 let rand = 0
 let variation = 0
@@ -548,7 +548,7 @@ let progress_bar: StatusBarSprite = null
 let can_jump = false
 let sprite_character: Sprite = null
 let new_seed = 0
-let sprite_seed: Sprite = null
+let sprite_seed: TextSprite = null
 let finished = false
 let jump_height = 0
 let sprite_screen_shader: Sprite = null
