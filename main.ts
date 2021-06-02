@@ -23,9 +23,6 @@ function set_new_seed () {
         }
     }
 }
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    jump_character()
-})
 scene.onHitWall(SpriteKind.Player, function (sprite, location) {
     if (sprite.isHittingTile(CollisionDirection.Bottom)) {
         if (tiles.locationXY(tiles.locationOfSprite(sprite), tiles.XY.row) >= tiles.tilemapRows() - 1) {
@@ -35,6 +32,9 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
             })
         }
     }
+})
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    jump_character()
 })
 function generate_3_wide_platform (col: number, row: number, variation: number, rand: number) {
     if (variation == 1) {
