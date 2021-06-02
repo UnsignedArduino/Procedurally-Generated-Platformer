@@ -429,10 +429,11 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.EndFlag, function (sprite, other
     sprite.setKind(SpriteKind.FinishedPlayer)
     finished = true
     timer.background(function () {
-        sprite.ay = 0
         while (!(sprite.isHittingTile(CollisionDirection.Bottom))) {
             pause(0)
         }
+        sprite.ay = 0
+        sprite.vy = 0
         sprite.setFlag(SpriteFlag.Ghost, true)
         enable_movement(false)
         sprite.vx = 75
