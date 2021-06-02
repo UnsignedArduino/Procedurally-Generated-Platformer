@@ -243,6 +243,7 @@ function generate_platformer () {
     rng_variation = Random.createRNG(rng_base.nextNumber())
     rng_rand = Random.createRNG(rng_base.nextNumber())
     rng_height = Random.createRNG(rng_base.nextNumber())
+    rng_distance = Random.createRNG(rng_base.nextNumber())
     rng_season = Random.createRNG(rng_base.nextNumber())
     rng_stars = Random.createRNG(rng_base.nextNumber())
     if (night_mode) {
@@ -386,7 +387,7 @@ function generate_platformer () {
         rand = rng_rand.randomRange(0, width - 1)
         generate_platform(start_col, start_row, width, variation, rand)
         start_col += width
-        start_col += 2
+        start_col += rng_distance.randomRange(1, 2)
         start_row += rng_height.randomRange(-2, 2)
         start_row = Math.constrain(start_row, 4, tiles.tilemapRows() - 1 - 4)
         if (false) {
@@ -525,6 +526,7 @@ let variation = 0
 let width = 0
 let rng_stars: FastRandomBlocks = null
 let rng_season: FastRandomBlocks = null
+let rng_distance: FastRandomBlocks = null
 let rng_height: FastRandomBlocks = null
 let rng_rand: FastRandomBlocks = null
 let rng_variation: FastRandomBlocks = null
