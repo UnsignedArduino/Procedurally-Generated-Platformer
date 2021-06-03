@@ -582,6 +582,8 @@ color.setPalette(
 color.Black
 )
 jump_height = 2.5
+let recording_fps = 12
+let recording_frames: Image[] = []
 finished = false
 generate_platformer()
 create_character(0, 11)
@@ -634,5 +636,13 @@ game.onUpdate(function () {
     update_progress_bar()
     if (!(finished)) {
         update_timer()
+    }
+})
+game.onUpdateInterval(Math.round(1000 / recording_fps), function () {
+    if (in_sim_or_rpi() && !(spriteutils.isDestroyed(sprite_character))) {
+        recording_frames.unshift(image.screenImage().clone())
+        if (recording_frames.length > 5 * recording_fps) {
+            recording_frames.pop()
+        }
     }
 })
