@@ -458,6 +458,9 @@ function make_end_platform (col: number, row: number) {
         }
     }
 }
+function in_sim_or_rpi () {
+    return control.deviceDalVersion() == "sim" || control.deviceDalVersion() == "linux"
+}
 blockMenu.onMenuOptionSelected(function (option, index) {
     selected = true
 })
