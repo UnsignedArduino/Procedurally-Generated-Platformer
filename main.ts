@@ -28,7 +28,40 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
         if (tiles.locationXY(tiles.locationOfSprite(sprite), tiles.XY.row) >= tiles.tilemapRows() - 1) {
             sprite.destroy()
             timer.after(2000, function () {
-                game.over(false)
+                first_sec = []
+                last_sec = []
+                for (let index = 0; index < 1 * recording_fps; index++) {
+                    first_sec.push(recording_frames.pop())
+                }
+                for (let index = 0; index < 1 * recording_fps; index++) {
+                    last_sec.push(recording_frames.pop())
+                }
+                sprite_dying_animation = sprites.create(first_sec[0], SpriteKind.Title)
+                sprite_dying_animation.setFlag(SpriteFlag.RelativeToCamera, true)
+                sprite_dying_animation.setPosition(scene.screenWidth() / 2, scene.screenHeight() / 2)
+                timer.background(function () {
+                    music.playMelody("C5 B G B A A - - ", 70)
+                })
+                animation.runImageAnimation(
+                sprite_dying_animation,
+                first_sec,
+                Math.round(1000 / (recording_fps / 3)),
+                false
+                )
+                timer.after(first_sec.length * Math.round(1000 / (recording_fps / 3)), function () {
+                    animation.runImageAnimation(
+                    sprite_dying_animation,
+                    last_sec,
+                    Math.round(1000 / (recording_fps / 2)),
+                    false
+                    )
+                    timer.after(last_sec.length * Math.round(1000 / (recording_fps / 2)), function () {
+                        sprite_dying_animation.destroy()
+                        timer.after(2000, function () {
+                            game.over(false)
+                        })
+                    })
+                })
             })
         }
     }
@@ -523,6 +556,7 @@ function update_progress_bar () {
         progress_bar.value = sprite_character.x
     }
 }
+let temp: Image = null
 let location: tiles.Location = null
 let sprite_end_flag: Sprite = null
 let rand = 0
@@ -553,9 +587,14 @@ let season = 0
 let progress_bar: StatusBarSprite = null
 let can_jump = false
 let sprite_character: Sprite = null
+let sprite_dying_animation: Sprite = null
+let last_sec: Image[] = []
+let first_sec: Image[] = []
 let new_seed = 0
 let sprite_seed: TextSprite = null
 let finished = false
+let recording_frames: Image[] = []
+let recording_fps = 0
 let jump_height = 0
 let sprite_screen_shader: Sprite = null
 let night_mode = false
@@ -582,8 +621,8 @@ color.setPalette(
 color.Black
 )
 jump_height = 2.5
-let recording_fps = 12
-let recording_frames: Image[] = []
+recording_fps = 30
+recording_frames = []
 finished = false
 generate_platformer()
 create_character(0, 11)
@@ -634,14 +673,21 @@ timer.after(1000, function () {
 })
 game.onUpdate(function () {
     update_progress_bar()
-    if (!(finished)) {
+    if (!(finished) && !(spriteutils.isDestroyed(sprite_character))) {
         update_timer()
     }
 })
 game.onUpdateInterval(Math.round(1000 / recording_fps), function () {
     if (in_sim_or_rpi() && !(spriteutils.isDestroyed(sprite_character))) {
-        recording_frames.unshift(image.screenImage().clone())
-        if (recording_frames.length > 5 * recording_fps) {
+        temp = image.create(scene.screenWidth() / 2 + 1, scene.screenHeight() / 2 + 1)
+        spriteutils.drawTransparentImage(image.screenImage(), temp, 0 - scene.screenWidth() / 4, 0 - scene.screenHeight() / 4)
+        if (night_mode) {
+            temp.drawRect(0, 0, scene.screenWidth() / 2, scene.screenHeight() / 2, 1)
+        } else {
+            temp.drawRect(0, 0, scene.screenWidth() / 2, scene.screenHeight() / 2, 15)
+        }
+        recording_frames.unshift(temp.clone())
+        if (recording_frames.length > 2 * recording_fps) {
             recording_frames.pop()
         }
     }

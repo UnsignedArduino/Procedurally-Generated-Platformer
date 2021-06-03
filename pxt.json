@@ -14,7 +14,8 @@
         "arcade-sprite-util": "github:jwunderl/arcade-sprite-util#v0.2.0",
         "block-menu": "github:riknoll/arcade-custom-menu#v0.0.1",
         "settings-blocks": "github:microsoft/pxt-settings-blocks#v1.0.0",
-        "arcade-shader": "github:riknoll/arcade-shader#d2a2572906fdb68ff429f337e30606b069e688ea"
+        "arcade-shader": "github:riknoll/arcade-shader#d2a2572906fdb68ff429f337e30606b069e688ea",
+        "pxt-scaling": "github:jwunderl/pxt-scaling#v0.1.0"
     },
     "files": [
         "main.blocks",
