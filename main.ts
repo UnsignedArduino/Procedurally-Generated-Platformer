@@ -39,6 +39,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                 sprite_dying_animation = sprites.create(first_sec[0], SpriteKind.Title)
                 sprite_dying_animation.setFlag(SpriteFlag.RelativeToCamera, true)
                 sprite_dying_animation.setPosition(scene.screenWidth() / 2, scene.screenHeight() / 2)
+                sprite_dying_animation.z = 10
                 if (night_mode) {
                     sprite_rip = textsprite.create("RIP", 0, 1)
                 } else {
@@ -47,6 +48,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                 sprite_rip.setMaxFontHeight(12)
                 sprite_rip.setFlag(SpriteFlag.RelativeToCamera, true)
                 sprite_rip.setPosition(scene.screenWidth() / 2, scene.screenHeight() / 2)
+                sprite_rip.z = 10
                 timer.background(function () {
                     music.playMelody("C5 B G B A A - - ", 70)
                 })
