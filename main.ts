@@ -39,6 +39,14 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                 sprite_dying_animation = sprites.create(first_sec[0], SpriteKind.Title)
                 sprite_dying_animation.setFlag(SpriteFlag.RelativeToCamera, true)
                 sprite_dying_animation.setPosition(scene.screenWidth() / 2, scene.screenHeight() / 2)
+                if (night_mode) {
+                    sprite_rip = textsprite.create("RIP", 0, 1)
+                } else {
+                    sprite_rip = textsprite.create("RIP", 0, 15)
+                }
+                sprite_rip.setMaxFontHeight(12)
+                sprite_rip.setFlag(SpriteFlag.RelativeToCamera, true)
+                sprite_rip.setPosition(scene.screenWidth() / 2, scene.screenHeight() / 2)
                 timer.background(function () {
                     music.playMelody("C5 B G B A A - - ", 70)
                 })
@@ -57,6 +65,7 @@ scene.onHitWall(SpriteKind.Player, function (sprite, location) {
                     )
                     timer.after(last_sec.length * Math.round(1000 / (recording_fps / 2)), function () {
                         sprite_dying_animation.destroy()
+                        sprite_rip.destroy()
                         timer.after(2000, function () {
                             game.over(false)
                         })
@@ -587,6 +596,7 @@ let season = 0
 let progress_bar: StatusBarSprite = null
 let can_jump = false
 let sprite_character: Sprite = null
+let sprite_rip: TextSprite = null
 let sprite_dying_animation: Sprite = null
 let last_sec: Image[] = []
 let first_sec: Image[] = []
