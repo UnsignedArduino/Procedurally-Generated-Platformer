@@ -657,14 +657,22 @@ sprite_seed.setFlag(SpriteFlag.AutoDestroy, true)
 sprite_seed.z = 10
 blockMenu.setControlsEnabled(false)
 blockMenu.setColors(1, 15)
+let options: string[] = []
+options.push("Play")
+options.push("Set seed")
+options.push("Random seed")
 if (night_mode) {
-    blockMenu.showMenu(["Play", "Set seed", "Enable day mode"], MenuStyle.List, MenuLocation.BottomRight)
+    options.push("Switch to day")
 } else {
-    blockMenu.showMenu(["Play", "Set seed", "Enable night mode"], MenuStyle.List, MenuLocation.BottomRight)
+    options.push("Switch to night")
 }
+options.push("Reset high score")
 timer.after(1000, function () {
     blockMenu.setControlsEnabled(true)
-    timer.background(function () {
+})
+timer.background(function () {
+    while (true) {
+        blockMenu.showMenu(options, MenuStyle.List, MenuLocation.BottomRight)
         wait_for_menu_select()
         blockMenu.closeMenu()
         if (blockMenu.selectedMenuIndex() == 0) {
@@ -673,14 +681,28 @@ timer.after(1000, function () {
             create_progress_bar()
             start_timer()
             enable_movement(true)
+            break;
         } else if (blockMenu.selectedMenuIndex() == 1) {
             set_new_seed()
         } else if (blockMenu.selectedMenuIndex() == 2) {
+            new_seed = randint(1, 65535)
+            blockSettings.writeNumber("seed", new_seed)
+            game.showLongText("" + new_seed + " is now the new seed!", DialogLayout.Bottom)
+            fade_in(true)
+            game.reset()
+        } else if (blockMenu.selectedMenuIndex() == 3) {
             save_bool("night_mode", !(night_mode))
             fade_in(true)
             game.reset()
+        } else if (blockMenu.selectedMenuIndex() == 4) {
+            if (game.ask("Erase high score?")) {
+                blockSettings.remove("high-score")
+                game.showLongText("High score erased.", DialogLayout.Bottom)
+            } else {
+                game.showLongText("Canceled.", DialogLayout.Bottom)
+            }
         }
-    })
+    }
 })
 game.onUpdate(function () {
     update_progress_bar()
