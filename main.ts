@@ -480,6 +480,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.EndFlag, function (sprite, other
         enable_movement(false)
         sprite.vx = 75
         timer.after(2000, function () {
+            info.setScore(Math.map(Math.constrain(time, 0, 120), 120, 0, 0, 1000))
             game.over(true)
         })
     })
