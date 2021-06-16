@@ -211,16 +211,13 @@ function update_timer () {
     }
     end_time = game.runtime()
     time = spriteutils.roundWithPrecision((end_time - start_time) / 1000, 2)
-    if (time < 60) {
-        sprite_timer.setText("" + time)
-    } else {
-        secs = spriteutils.roundWithPrecision(time - Math.idiv(time, 60) * 60, 2)
-        if (secs < 10) {
-            sprite_timer.setText("" + Math.idiv(time, 60) + ":0" + secs)
-        } else {
-            sprite_timer.setText("" + Math.idiv(time, 60) + ":" + secs)
-        }
+    time_text = format_time(time)
+    while (time_text.length < 8) {
+        time_text = "" + time_text + " "
     }
+    eta = spriteutils.roundWithPrecision(time / sprite_character.x * (tiles.tilemapColumns() * tiles.tileWidth()), 2)
+    time_text = "" + time_text + " " + format_time(eta)
+    sprite_timer.setText(time_text)
 }
 function generate_2_wide_platform (col: number, row: number, variation: number, rand: number) {
     if (variation == 1) {
@@ -506,6 +503,18 @@ function make_end_platform (col: number, row: number) {
 function in_sim_or_rpi () {
     return control.deviceDalVersion() == "sim" || control.deviceDalVersion() == "linux"
 }
+function format_time (seconds: number) {
+    if (seconds < 60) {
+        return "" + seconds
+    } else {
+        secs = spriteutils.roundWithPrecision(seconds % 60, 2)
+        if (secs < 10) {
+            return "" + Math.idiv(seconds, 60) + ":0" + secs
+        } else {
+            return "" + Math.idiv(seconds, 60) + ":" + secs
+        }
+    }
+}
 blockMenu.onMenuOptionSelected(function (option, index) {
     selected = true
 })
@@ -569,6 +578,7 @@ function update_progress_bar () {
     }
 }
 let temp: Image = null
+let secs = 0
 let location: tiles.Location = null
 let sprite_end_flag: Sprite = null
 let rand = 0
@@ -584,7 +594,8 @@ let rng_width: FastRandomBlocks = null
 let rng_base: FastRandomBlocks = null
 let start_row = 0
 let start_col = 0
-let secs = 0
+let eta = 0
+let time_text = ""
 let start_time = 0
 let time = 0
 let end_time = 0
